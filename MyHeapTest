@@ -1,0 +1,154 @@
+import static org.junit.Assert.*;
+import java.util.Random;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+public class MyHeapTest {
+
+	@Test
+	public void testInitializeHeap() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(10);
+		
+		H.initializeHeap(priorities);
+		assertEquals(H.isHeap(), true);
+
+		// Set priorities to 9, 8, 7, ..., 1
+		for(int i = 0; i < priorities.length; i++) {
+			priorities[i] = priorities.length - i;
+		}
+		
+		H.initializeHeap(priorities);
+		assertEquals(H.isHeap(), true);
+		
+		// Randomize the contents of priorities, and run a few more checks
+		Random r = new Random();
+		for(int i = 0; i < 10; i++) {
+			int idx1 = r.nextInt(priorities.length);
+			int idx2 = r.nextInt(priorities.length);
+			
+			int tempValue = priorities[idx1];
+			priorities[idx1] = priorities[idx2];
+			priorities[idx2] = tempValue;
+			
+			H.initializeHeap(priorities);
+			assertEquals(H.isHeap(), true);
+			
+		}
+		
+	}
+	
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+	
+	@Test
+	public void testInitializeHeapTooSmall() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(0);
+		
+		thrown.expect(Exception.class);
+		
+		H.initializeHeap(priorities);
+		assertEquals(H.isHeap(), true);
+		
+	}
+
+	@Test
+	public void testGetHeightestPriority() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(10);
+		
+		H.initializeHeap(priorities);
+		assertEquals(H.getHeighestPriority(), 9);
+		
+		priorities[0] = 20;
+		H.initializeHeap(priorities);
+		assertEquals(H.getHeighestPriority(), 20);
+		
+	}
+	
+	@Test
+	public void testGetHeighestPriorityEmpty() throws Exception {
+		MyHeap H = new MyHeap(0);
+		
+		thrown.expect(Exception.class);
+		
+		H.getHeighestPriority();
+		
+	}
+	
+	@Test
+	public void testInsert() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(20);
+		
+		H.initializeHeap(priorities);
+		
+		for(int i = 10; i < 20; i++) {
+			H.insert(i);
+			assertEquals(H.isHeap(), true);
+		}
+			
+	}
+	
+	@Test
+	public void testInsertFull() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(9);
+		
+		H.initializeHeap(priorities);
+		
+		thrown.expect(Exception.class);
+		
+		H.insert(10);
+		
+	}
+	
+	@Test
+	public void testDelete() throws Exception {
+		int[] priorities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		MyHeap H = new MyHeap(20);
+		
+		H.initializeHeap(priorities);
+		
+		// Remove values from heap, should come off as 9, 8, 7, ..., 1
+		for(int i = 9; i >= 1; i--) {
+			assertEquals(H.delete(), i);
+			assertEquals(H.isHeap(), true);
+		}
+		
+	}
+	
+	@Test
+	public void testDeleteEmpty() throws Exception {
+		MyHeap H = new MyHeap(0);
+		
+		thrown.expect(Exception.class);
+		
+		H.delete();
+		
+	}
+	
+	@Test
+	public void testUberStress() throws Exception {
+		MyHeap H = new MyHeap(10000000);
+		
+		for(int i = 1; i < 1000000; i++) {
+			H.insert(i);
+		}
+		
+		assertEquals(H.isHeap(), true);
+		
+		for(int i = 1; i <500000; i++) {
+			H.delete();
+		}
+ 		assertEquals(H.isHeap(), true);
+		
+ 		
+ 		
+ 		
+	}
+	
+}
